@@ -25,7 +25,7 @@ const Header = () => {
     }, [isDarkMode]);
 
     return (
-        <header className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-md fixed w-full top-0 left-0 z-50">
+        <header className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-md fixed w-full top-0 left-0 z-50">
             <div className="container mx-auto flex justify-between items-center py-4 px-6">
                 <h2 className="text-2xl font-bold text-indigo-500">Todo App</h2>
 
