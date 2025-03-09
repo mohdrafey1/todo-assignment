@@ -16,7 +16,8 @@ import { FaPlus, FaSpinner } from 'react-icons/fa';
 import AddTaskModal from './AddTaskModal';
 import EditTaskModal from './EditTaskModal';
 import TaskCard from './TaskCard';
-import toast from 'react-hot-toast'; // Import react-hot-toast
+import toast from 'react-hot-toast';
+import TaskTable from './TaskTable';
 
 export default function TodoList() {
     const dispatch = useDispatch();
@@ -71,7 +72,7 @@ export default function TodoList() {
         e.preventDefault();
 
         if (!user) {
-            toast.error('Please log in to add tasks.'); // Show toast error
+            toast.error('Please log in to add tasks.');
             return;
         }
 
@@ -90,10 +91,10 @@ export default function TodoList() {
             setTaskTitle('');
             setTaskDescription('');
             setTaskDueDate('');
-            toast.success('Task added successfully!'); // Show success toast
+            toast.success('Task added successfully!');
         } catch (error) {
             console.error('Firestore write error:', error);
-            toast.error('Failed to add task. Please try again.'); // Show error toast
+            toast.error('Failed to add task. Please try again.');
         }
     };
 
@@ -101,10 +102,10 @@ export default function TodoList() {
         try {
             await deleteDoc(doc(db, 'todos', id));
             dispatch(deleteTodo(id));
-            toast.success('Task deleted successfully!'); // Show success toast
+            toast.success('Task deleted successfully!');
         } catch (error) {
             console.error('Error deleting task:', error);
-            toast.error('Failed to delete task. Please try again.'); // Show error toast
+            toast.error('Failed to delete task. Please try again.');
         }
     };
 
@@ -113,10 +114,10 @@ export default function TodoList() {
         try {
             await updateDoc(doc(db, 'todos', id), { status: newStatus });
             dispatch(updateTodo({ id, status: newStatus }));
-            toast.success('Task status updated!'); // Show success toast
+            toast.success('Task status updated!');
         } catch (error) {
             console.error('Error updating status:', error);
-            toast.error('Failed to update task status. Please try again.'); // Show error toast
+            toast.error('Failed to update task status. Please try again.');
         }
     };
 
@@ -143,10 +144,10 @@ export default function TodoList() {
             setTaskTitle('');
             setTaskDescription('');
             setTaskDueDate('');
-            toast.success('Task updated successfully!'); // Show success toast
+            toast.success('Task updated successfully!');
         } catch (error) {
             console.error('Error updating task:', error);
-            toast.error('Failed to update task. Please try again.'); // Show error toast
+            toast.error('Failed to update task. Please try again.');
         }
     };
 
@@ -166,7 +167,7 @@ export default function TodoList() {
     };
 
     return (
-        <div className="mt-16 p-4 dark:bg-gray-900 dark:text-white min-h-screen lg:max-w-4/5">
+        <div className="mt-16 p-4 dark:bg-gray-900 dark:text-white min-h-screen w-full xl:max-w-4/5">
             <div className="flex justify-center items-center">
                 <button
                     onClick={() => setIsAddModalOpen(true)}
@@ -222,50 +223,154 @@ export default function TodoList() {
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                                 Ongoing Tasks
                             </h2>
-                            <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {todos
-                                    .filter(
-                                        (task) => task.status !== 'completed'
-                                    )
-                                    .map((task) => (
-                                        <TaskCard
-                                            key={task.id}
-                                            task={task}
-                                            toggleStatus={toggleStatus}
-                                            openEditModal={openEditModal}
-                                            deleteTask={deleteTask}
-                                            expandedDescriptions={
-                                                expandedDescriptions
-                                            }
-                                            toggleReadMore={toggleReadMore}
-                                        />
-                                    ))}
-                            </ul>
+
+                            <div className="hidden lg:block">
+                                <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                                    <thead>
+                                        <tr className="text-left border-b border-gray-200 dark:border-gray-700">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Title
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Description
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Due Date
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Created At
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {todos
+                                            .filter(
+                                                (task) =>
+                                                    task.status !== 'completed'
+                                            )
+                                            .map((task) => (
+                                                <TaskTable
+                                                    key={task.id}
+                                                    task={task}
+                                                    toggleStatus={toggleStatus}
+                                                    openEditModal={
+                                                        openEditModal
+                                                    }
+                                                    deleteTask={deleteTask}
+                                                    expandedDescriptions={
+                                                        expandedDescriptions
+                                                    }
+                                                    toggleReadMore={
+                                                        toggleReadMore
+                                                    }
+                                                />
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="lg:hidden ">
+                                <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {todos
+                                        .filter(
+                                            (task) =>
+                                                task.status !== 'completed'
+                                        )
+                                        .map((task) => (
+                                            <TaskCard
+                                                key={task.id}
+                                                task={task}
+                                                toggleStatus={toggleStatus}
+                                                openEditModal={openEditModal}
+                                                deleteTask={deleteTask}
+                                                expandedDescriptions={
+                                                    expandedDescriptions
+                                                }
+                                                toggleReadMore={toggleReadMore}
+                                            />
+                                        ))}
+                                </ul>
+                            </div>
                         </div>
 
                         <div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-10 mb-4">
                                 Completed Tasks
                             </h2>
-                            <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {todos
-                                    .filter(
-                                        (task) => task.status === 'completed'
-                                    )
-                                    .map((task) => (
-                                        <TaskCard
-                                            key={task.id}
-                                            task={task}
-                                            toggleStatus={toggleStatus}
-                                            openEditModal={openEditModal}
-                                            deleteTask={deleteTask}
-                                            expandedDescriptions={
-                                                expandedDescriptions
-                                            }
-                                            toggleReadMore={toggleReadMore}
-                                        />
-                                    ))}
-                            </ul>
+
+                            <div className="hidden lg:block">
+                                <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                                    <thead>
+                                        <tr className="text-left border-b border-gray-200 dark:border-gray-700">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Title
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Description
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Due Date
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Created At
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {todos
+                                            .filter(
+                                                (task) =>
+                                                    task.status === 'completed'
+                                            )
+                                            .map((task) => (
+                                                <TaskTable
+                                                    key={task.id}
+                                                    task={task}
+                                                    toggleStatus={toggleStatus}
+                                                    openEditModal={
+                                                        openEditModal
+                                                    }
+                                                    deleteTask={deleteTask}
+                                                    expandedDescriptions={
+                                                        expandedDescriptions
+                                                    }
+                                                    toggleReadMore={
+                                                        toggleReadMore
+                                                    }
+                                                />
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div className="lg:hidden">
+                                <ul className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {todos
+                                        .filter(
+                                            (task) =>
+                                                task.status === 'completed'
+                                        )
+                                        .map((task) => (
+                                            <TaskCard
+                                                key={task.id}
+                                                task={task}
+                                                toggleStatus={toggleStatus}
+                                                openEditModal={openEditModal}
+                                                deleteTask={deleteTask}
+                                                expandedDescriptions={
+                                                    expandedDescriptions
+                                                }
+                                                toggleReadMore={toggleReadMore}
+                                            />
+                                        ))}
+                                </ul>
+                            </div>
                         </div>
                     </>
                 )}

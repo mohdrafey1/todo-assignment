@@ -10,12 +10,11 @@ const TaskCard = ({
 }) => {
     return (
         <li
-            className={`group p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 ease-in-out ${
-                task.description ? 'h-auto' : 'h-40'
+            className={`bg-white dark:bg-gray-800 group p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 ease-in-out ${
+                task.description ? 'h-auto' : 'h-44'
             }`}
         >
-            <div className="flex flex-col space-y-4">
-                {/* Task Title and Due Date */}
+            <div className="flex flex-col space-y-4 ">
                 <div className="flex justify-between items-center">
                     <span
                         className={`text-lg font-semibold ${
@@ -33,12 +32,11 @@ const TaskCard = ({
                     </span>
                 </div>
 
-                {/* Task Description */}
                 {task.description && (
                     <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                         {expandedDescriptions[task.id]
                             ? task.description
-                            : task.description.substring(0, 100) + '...'}
+                            : task.description.substring(0, 100) + '.'}
                         {task.description.length > 100 && (
                             <button
                                 onClick={() => toggleReadMore(task.id)}
@@ -52,8 +50,11 @@ const TaskCard = ({
                     </p>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Created At: {new Date(task.createdAt).toLocaleString()}
+                </div>
+
+                <div className="flex items-center justify-between mt-4">
                     <button
                         onClick={() => toggleStatus(task.id, task.status)}
                         className={`p-2 rounded-lg transition-all duration-300 ${
