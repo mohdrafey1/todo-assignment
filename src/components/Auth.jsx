@@ -7,6 +7,9 @@ import {
     signInFailure,
     signOut as signOutAction,
 } from '../redux/slices/authSlice';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import toast from 'react-hot-toast';
 
 export default function Auth() {
     const dispatch = useDispatch();
@@ -16,9 +19,26 @@ export default function Auth() {
         dispatch(signInStart());
         try {
             const result = await signInWithPopup(auth, googleProvider);
-            dispatch(signInSuccess(result.user));
+            const user = result.user;
+
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    createdAt: new Date(),
+                });
+            }
+
+            dispatch(signInSuccess(user));
+            toast.success('Login Successfull!');
         } catch (error) {
             dispatch(signInFailure(error.message));
+            toast.error('Login Failed ...');
             console.error('Sign-in error:', error.message);
         }
     };
@@ -27,13 +47,14 @@ export default function Auth() {
         try {
             await signOut(auth);
             dispatch(signOutAction());
+            toast.success('Logout Successfull!');
         } catch (error) {
             console.error('Sign-out error:', error.message);
         }
     };
 
     return (
-        <div className=" text-center">
+        <div className="text-center">
             {loading ? (
                 <p className="text-gray-600">Loading...</p>
             ) : currentUser ? (
@@ -48,7 +69,6 @@ export default function Auth() {
                 </div>
             ) : (
                 <>
-                    {error && <p className="text-red-500">{error}</p>}
                     <button
                         onClick={signIn}
                         className="px-4 py-2 bg-blue-500 text-white rounded"
