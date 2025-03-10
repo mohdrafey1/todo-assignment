@@ -73,6 +73,7 @@ export default function TodoList() {
 
         if (!user) {
             toast.error('Please log in to add tasks.');
+            setIsAddModalOpen(false);
             return;
         }
 
